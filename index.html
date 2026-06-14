@@ -3,236 +3,773 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Envestorr SecureCheck — Cybersecurity Audit for Freelancers</title>
-    <!-- Tailwind CSS for sleek, instant styling without configuration -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Envestorr SecureCheck - Audit Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Smooth transitions for active quiz sections */
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root {
+            --bg-primary: #0a0f1d;
+            --bg-surface: #131c31;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--bg-surface);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .radio-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-card input {
+            display: none;
+        }
+
+        .radio-card:hover {
+            border-color: var(--text-muted);
+        }
+
+        .radio-card.selected {
+            border-color: var(--accent-color);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            margin-top: 3px;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-color);
+        }
+
+        .checkbox-group span {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            gap: 16px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+        }
+
+        .quiz-section-header {
+            color: var(--accent-color);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .question-box {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 28px;
+            min-height: 54px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-opt-btn {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            text-align: left;
+            padding: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .quiz-opt-btn:hover {
+            border-color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 15, 29, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .payment-modal {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            padding: 32px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .badge-low { background: rgba(16, 185, 129, 0.15); color: var(--success-color); border: 1px solid var(--success-color); }
+        .badge-medium { background: rgba(245, 158, 11, 0.15); color: var(--warning-color); border: 1px solid var(--warning-color); }
+        .badge-high { background: rgba(239, 68, 68, 0.15); color: var(--danger-color); border: 1px solid var(--danger-color); }
+
+        .payment-summary {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin-bottom: 0;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .calendar-container {
+            margin-top: 15px;
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .success-state {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .success-icon {
+            font-size: 48px;
+            color: var(--success-color);
+            margin-bottom: 16px;
+        }
+
+        .notification-chip {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px dashed var(--accent-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 15px;
+            text-align: left;
+            word-break: break-all;
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+<body>
 
-    <!-- Header Navigation -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="bg-emerald-500 text-slate-950 font-black p-2 rounded text-xs tracking-wider">ENVESTORR</div>
-                <span class="text-lg font-bold tracking-tight text-white">SecureCheck</span>
-            </div>
-            <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded border border-slate-700">Ghana Freelance Edition</span>
-        </div>
-    </header>
-
-    <!-- Main Content App Canvas -->
-    <main class="max-w-3xl mx-auto px-4 py-8 flex-grow w-full">
-        
-        <!-- Welcome Screen -->
-        <div id="welcome-screen" class="space-y-6 text-center max-w-2xl mx-auto py-12">
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                Are your freelance revenue channels and client data <span class="text-emerald-400">truly locked down?</span>
-            </h1>
-            <p class="text-slate-400 text-base md:text-lg leading-relaxed">
-                Take this 2-minute independent cybersecurity diagnostic. Instantly discover your vulnerability score against WhatsApp hijacking, Momo social engineering, and client data leaks.
-            </p>
-            <div class="pt-4">
-                <button onclick="startAudit()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-4 rounded-xl text-lg transition duration-200 shadow-lg shadow-emerald-500/20 cursor-pointer">
-                    Start Free Security Audit →
-                </button>
-            </div>
-            <p class="text-xs text-slate-500">No software installation required. 100% confidential processing.</p>
+    <div class="container">
+        <div class="header">
+            <h1>Envestorr SecureCheck</h1>
+            <p id="headerSubtitle">On-Demand Security & Infrastructure Audit</p>
         </div>
 
-        <!-- Interactive Audit Screen -->
-        <div id="audit-screen" class="hidden max-w-xl mx-auto bg-slate-800/50 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl fade-in">
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-700 h-2 rounded-full mb-6 overflow-hidden">
-                <div id="progress-bar" class="bg-emerald-400 h-full w-0 transition-all duration-300"></div>
+        <div class="step-panel active" id="step-profile">
+            <div class="form-group">
+                <label for="userName">Full Name</label>
+                <input type="text" id="userName" placeholder="e.g. Kwame Mensah">
             </div>
             
-            <div class="flex justify-between items-center mb-4">
-                <span id="section-title" class="text-xs font-semibold tracking-wider text-emerald-400 uppercase">Section A</span>
-                <span id="question-counter" class="text-xs text-slate-400 font-mono">Question 1 of 12</span>
+            <div class="form-group">
+                <label for="userEmail">Email Address</label>
+                <input type="email" id="userEmail" placeholder="e.g. name@domain.com">
             </div>
 
-            <!-- Dynamic Question Text Placeholder -->
-            <h2 id="question-text" class="text-xl font-medium text-white mb-8 min-h-[4rem] leading-snug">
-                Loading assessment question...
-            </h2>
-
-            <!-- Interface Choices -->
-            <div class="space-y-3">
-                <button onclick="handleAnswer(true)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500/50 px-6 py-4 rounded-xl font-medium text-lg text-slate-200 transition duration-150 flex justify-between items-center cursor-pointer group">
-                    <span>Yes, always / fully secure</span>
-                    <span class="text-slate-500 group-hover:text-emerald-400 font-bold">✓</span>
-                </button>
-                <button onclick="handleAnswer(false)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-rose-500/50 px-6 py-4 rounded-xl font-medium text-lg text-slate-200 transition duration-150 flex justify-between items-center cursor-pointer group">
-                    <span>No / Not entirely sure</span>
-                    <span class="text-slate-500 group-hover:text-rose-400 font-bold">✗</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Dynamic Results & Paywall Screen -->
-        <div id="results-screen" class="hidden max-w-xl mx-auto space-y-6 fade-in">
-            
-            <!-- Dynamic Risk Header (Injected via JS) -->
-            <div id="risk-header-card" class="rounded-2xl p-6 md:p-8 text-center border">
-                <!-- Content will generate dynamically -->
-            </div>
-
-            <!-- Tailored Offers / Paywall System -->
-            <div id="paywall-section" class="space-y-4">
-                <h3 class="text-sm font-bold tracking-widest text-slate-400 uppercase text-center mt-6">Recommended Immediate Fixes</h3>
-                
-                <div class="grid grid-cols-1 gap-4">
-                    <!-- Option A: GHS 20 -->
-                    <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-5 flex flex-col justify-between hover:border-slate-600 transition">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="text-lg font-bold text-white">Full Security Action Checklist</h4>
-                                <span class="text-emerald-400 font-mono font-bold text-lg">GHS 20</span>
-                            </div>
-                            <p class="text-sm text-slate-400 leading-relaxed mb-4">
-                                Get an instant, step-by-step PDF detailing exactly how to secure your setup based on your missed answers. Includes direct configurations for securing Ghanaian WhatsApp Business settings and remote setups.
-                            </p>
-                        </div>
-                        <!-- You will replace this link with your Paystack payment page link later -->
-                        <a href="https://paystack.com/pay/your-custom-page-a" target="_blank" class="w-full text-center bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 text-white font-bold py-3 rounded-lg text-sm transition">
-                            Unlock Action Blueprint
-                        </a>
+            <div class="form-group">
+                <label>How would you like to be audited?</label>
+                <div class="radio-grid">
+                    <div class="radio-card" id="role-business" onclick="selectRole('business')">
+                        <input type="radio" name="userRole" id="radio-bus" value="business" style="display:none;">
+                        <strong>Online Business Owner / Freelancer</strong>
                     </div>
-
-                    <!-- Option B: GHS 50 -->
-                    <div class="bg-slate-800 border-2 border-emerald-500/30 shadow-lg shadow-emerald-500/5 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-emerald-500 text-slate-950 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-bl">Popular</div>
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="text-lg font-bold text-white">Blueprint + 15-Min Live Consult</h4>
-                                <span class="text-emerald-400 font-mono font-bold text-lg">GHS 50</span>
-                            </div>
-                            <p class="text-sm text-slate-300 leading-relaxed mb-4">
-                                Receive the complete action checklist plus an express **15-minute live security screen share** with an expert to audit your critical keys, update settings, and test your backup workflows actively.
-                            </p>
-                        </div>
-                        <!-- You will replace this link with your Paystack payment page link later -->
-                        <a href="https://paystack.com/pay/your-custom-page-b" target="_blank" class="w-full text-center bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-lg text-sm transition shadow-md">
-                            Book Live Consultation
-                        </a>
+                    <div class="radio-card" id="role-individual" onclick="selectRole('individual')">
+                        <input type="radio" name="userRole" id="radio-ind" value="individual" style="display:none;">
+                        <strong>Not an Online Business Owner / Freelancer</strong>
                     </div>
                 </div>
             </div>
 
-            <!-- Reset Button for Testing -->
-            <div class="text-center pt-4">
-                <button onclick="resetAudit()" class="text-xs text-slate-500 hover:text-slate-400 underline">Restart Security Evaluation</button>
+            <div class="form-group">
+                <label class="checkbox-group">
+                    <input type="checkbox" id="betaConsent" checked>
+                    <span>Join our exclusive Beta Program to receive advanced development previews, system updates, and cybersecurity newsletters.</span>
+                </label>
+            </div>
+
+            <div class="btn-container">
+                <button type="button" class="btn btn-primary" onclick="initiateAuditSequence()">Begin Security Audit →</button>
             </div>
         </div>
 
-    </main>
+        <div class="step-panel" id="step-quiz">
+            <div class="progress-container">
+                <div class="progress-bar-fill" id="quizProgress"></div>
+            </div>
+            <div class="quiz-section-header" id="quizSectionLabel">Section A</div>
+            <div class="question-box" id="quizQuestionText">Loading diagnostic metrics...</div>
+            
+            <div class="quiz-options">
+                <button type="button" class="quiz-opt-btn" onclick="processQuestionAnswer(true)">🟢 YES, always / fully secure</button>
+                <button type="button" class="quiz-opt-btn" onclick="processQuestionAnswer(false)">🔴 NO / Not entirely sure</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Footer -->
-    <footer class="text-center py-6 border-t border-slate-800 text-xs text-slate-500">
-        <p>&copy; 2026 Envestorr SecureCheck. All data safely encrypted locally.</p>
-    </footer>
+    <div class="modal-overlay" id="paymentModalOverlay">
+        <div class="payment-modal" id="modalWindowContent">
+            <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+            
+            <div id="checkoutFormStage">
+                <div id="modalBadge" class="badge">Evaluating Profile</div>
+                <h2 id="modalTitle" style="font-size: 20px; margin-bottom: 8px;">Analysis Complete</h2>
+                <p id="modalDescription" style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Your security parameters have been parsed. Unlock your report below.</p>
+                
+                <div class="payment-summary">
+                    <div class="summary-row">
+                        <span>Target Audit Identity</span>
+                        <span id="summaryName" style="color: var(--text-main); font-weight: 500;">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Auditing Scope Matrix</span>
+                        <span id="summaryScope" style="color: var(--text-main); font-weight: 500;">-</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Verification Cost</span>
+                        <span id="summaryPrice">GHS 0.00</span>
+                    </div>
+                </div>
 
-    <!-- Core App Logic Engine -->
+                <button class="btn btn-primary" id="gatewayTriggerBtn" style="padding: 16px; font-size: 16px;" onclick="invokePaystackInlineEngine()">Unlock Complete Action Report</button>
+                <div class="sync-loader" id="cloudSyncIndicator">Cloud Sync Engine Initialized...</div>
+            </div>
+
+            <div id="calendarBookingStage" style="display: none;">
+                <div class="badge badge-high">Action Required</div>
+                <h2 style="font-size: 20px; margin-bottom: 8px;">Schedule Security Briefing</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Critical risk variables found. Your profile requires a manual 30-minute security consultation validation check. Lock in your session slot below:</p>
+                
+                <div class="calendar-container">
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="bookingDate">Select Consultation Date</label>
+                        <input type="date" id="bookingDate">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label for="bookingTime">Select 30-Minute Available Time Slot</label>
+                        <select id="bookingTime">
+                            <option value="">-- Choose a window --</option>
+                            <option value="09:00 AM - 09:30 AM">09:00 AM - 09:30 AM</option>
+                            <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+                            <option value="01:00 PM - 01:30 PM">01:00 PM - 01:30 PM</option>
+                            <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="commitCalendarAppointment()">Confirm & Schedule Consultation</button>
+            </div>
+
+            <div id="checkoutSuccessStage" style="display: none;">
+                <div class="success-state">
+                    <div class="success-icon">✓</div>
+                    <h2 id="successHeading" style="font-size: 22px; margin-bottom: 12px;">Transaction Confirmed</h2>
+                    <p id="successMessage" style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Processing audit system variables...</p>
+                    <div id="dispatchLogs" class="notification-chip" style="display: none;"></div>
+                    <button type="button" class="btn btn-secondary" style="margin-top: 24px;" onclick="closePaymentModal()">Close Portal View</button>
+                </div>
+            </div>
+
+        </div>
+      </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <script>
-        // The 12 Architecture Questions
-        const questions = [
-            { section: "Section A: Financial & Account Access", text: "Do you use unique, distinct passwords across your primary business email, banking/Momo account, and social media pipelines?" },
-            { section: "Section A: Financial & Account Access", text: "Have you activated Two-Factor Authentication (2FA) via a dedicated app (like Google Authenticator) instead of just basic SMS on your primary email?" },
-            { section: "Section A: Financial & Account Access", text: "If a client initiates payments via international services or escrow platforms, is your receiving engine locked with a multi-device validation flag?" },
-            { section: "Section A: Financial & Account Access", text: "Do you change your primary digital transaction pins or platform passwords immediately if you suspect shoulder-viewing in shared spaces?" },
-            { section: "Section B: Client Data & Operational Security", text: "If your system hardware completely fails or drops right now, do you have automated cloud backups capturing active production code/designs daily?" },
-            { section: "Section B: Client Data & Operational Security", text: "Do you actively inspect sender email domain signatures before downloading attached files or asset briefs sent by brand new clients?" },
-            { section: "Section B: Client Data & Operational Security", text: "Do you strictly avoid logging into professional dashboards or payout hubs via unsecured public coffee shop/hotel networks without an active VPN?" },
-            { section: "Section B: Client Data & Operational Security", text: "When utilizing collaborative client asset frameworks (Drive, Canva, Notion), do you restrict access privileges to specific emails rather than choosing 'Anyone with the link can edit'?" },
-            { section: "Section C: Workspace Communication", text: "Have you configured a secondary security PIN for your active WhatsApp or WhatsApp Business application layout?" },
-            { section: "Section C: Workspace Communication", text: "Do you explicitly call to verify identity if a colleague or client reaches out on text out of nowhere asking for an express 'activation code' or emergency Momo wire?" },
-            { section: "Section C: Workspace Communication", text: "Are your desktop environment and portable device software engines deployed to download stability and operating security patches automatically?" },
-            { section: "Section C: Workspace Communication", text: "Do you possess an offline, physical record of master account fail-safes and secondary single-use recovery sheets stored away from your work hardware?" }
+        // BACKEND SCRIPT CONFIGURATION CODES
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxu3_Hp0-yneExypvLjgFwDu6SealSfgXInB0ZlX5gVqTDfmj084-IvvG9pnLQvQ6aQ/exec";
+
+        // Business Question Bank Layout Block
+        const businessQuestions = [
+            { id: "B1", section: "Section A: Financial & Account Access", text: "Do you use different, unique passwords for your main business email, banking/Momo app, and social media profiles?" },
+            { id: "B2", section: "Section A: Financial & Account Access", text: "Have you enabled Two-Factor Verification (2FA) via an authenticator app or security key on your primary email address?" },
+            { id: "B3", section: "Section A: Financial & Account Access", text: "If a client pays you via an international platform (like Paystack, PayPal, or Upwork) or an escrow service, is that account secured with a secondary device approval step?" },
+            { id: "B4", section: "Section A: Financial & Account Access", text: "Do you change your primary digital payment pins or passwords immediately if you suspect someone caught a glimpse of you typing them in public?" },
+            { id: "B5", section: "Section B: Client Data & Operational Security", text: "If your primary laptop or phone crashed or was stolen right now, do you have an automated, encrypted cloud backup that updates your active client files daily?" },
+            { id: "B6", section: "Section B: Client Data & Operational Security", text: "Do you explicitly check the exact email address of sender domains before clicking links or downloading attachments in project briefs from 'new clients'?" },
+            { id: "B7", section: "Section B: Client Data & Operational Security", text: "Do you avoid using public, unsecured Wi-Fi networks (at cafes, restaurants, or hotels) for accessing portals or financial dashboards unless you are using a trusted VPN?" },
+            { id: "B8", section: "Section B: Client Data & Operational Security", text: "When working with collaborative client links (like Google Drive, Notion, or Canva), do you restrict access to specific emails instead of setting the permissions to 'Anyone with the link can edit/view'?" },
+            { id: "B9", section: "Section C: Communication Hijacking Protection", text: "Have you set up a custom 6-digit PIN for Two-Step Verification on your WhatsApp or WhatsApp Business application?" },
+            { id: "B10", section: "Section C: Communication Hijacking Protection", text: "Do you instantly decline or verify via phone call any unexpected requests from friends or colleagues asking you to send them a 'verification code' or cash via Momo?" },
+            { id: "B11", section: "Section C: Communication Hijacking Protection", text: "Are the software operating systems and security patches on your primary work devices (Windows/Mac/iOS/Android) set to update automatically?" },
+            { id: "B12", section: "Section C: Communication Hijacking Protection", text: "Do you have a documented, offline list of your emergency backup codes (for Google, WhatsApp, etc.) stored securely outside of your phone or laptop?" }
         ];
 
+        // Non-Business Owner Question Bank Layout Block
+        const individualQuestions = [
+            { id: "I1", section: "Section A: Mobile Money (MoMo) Safety", text: "Do you avoid using easily guessable numbers (like your year of birth, sequential digits like 1234, or repeating numbers) as your MoMo PIN?" },
+            { id: "I2", section: "Section A: Mobile Money (MoMo) Safety", text: "If you receive a call from someone claiming they 'accidentally sent money to your wallet,' do you refuse to send it back until you independently verify your official wallet statement balance?" },
+            { id: "I3", section: "Section A: Mobile Money (MoMo) Safety", text: "Do you avoid giving your MoMo PIN or answering security prompt confirmation calls while completing cash-out transactions at agent stalls?" },
+            { id: "I4", section: "Section B: WhatsApp Security", text: "Have you turned on Two-Step Verification (the mandatory 6-digit PIN) directly within your WhatsApp account settings?" },
+            { id: "I5", section: "Section B: WhatsApp Security", text: "Is your WhatsApp profile photo and 'Last Seen' timestamp hidden or restricted to 'My Contacts' only to keep scammers from impersonating you?" },
+            { id: "I6", section: "Section B: WhatsApp Security", text: "Do you instantly reject or call to verify any sudden messages from family or acquaintances asking you to send them a screenshot of a verification code or emergency funds?" },
+            { id: "I7", section: "Section C: Gmail & Main Email Security", text: "Have you enabled Google 2-Step Verification using secure prompts or an authenticator app instead of depending entirely on standard SMS messages?" },
+            { id: "I8", section: "Section C: Gmail & Main Email Security", text: "Do you periodically audit the external apps, games, and third-party websites that have open API permissions to read your emails or access your Google Drive?" },
+            { id: "I9", section: "Section C: Gmail & Main Email Security", text: "Are your email account's recovery phone number and backup recovery email address up-to-date and actively monitored?" },
+            { id: "I10", section: "Section D: Social Media & Device Security", text: "Do you use entirely different, distinct passwords for your Instagram, Facebook, and TikTok accounts instead of recycling a single password layout?" },
+            { id: "I11", section: "Section D: Social Media & Device Security", text: "Do you avoid tapping promotional link cards or login screens sent to you via random Direct Messages (DMs) promising free data packages, cash gifts, or account badges?" },
+            { id: "I12", section: "Section D: Social Media & Device Security", text: "Is your smartphone's operating system configured to automatically download stability patches and security system upgrades as soon as they drop?" }
+        ];
+
+        // System Core Memory Variables State Engine
+        let userDataProfile = { name: "", email: "", role: "", betaOptIn: true };
+        let dynamicActiveQuestions = [];
         let currentQuestionIndex = 0;
-        let secureAnswersCount = 0;
+        let scoreCounter = 0;
+        let flaggedVulnerabilities = [];
+        let assignedGhsFee = 0;
 
-        function startAudit() {
-            document.getElementById('welcome-screen').classList.add('hidden');
-            document.getElementById('audit-screen').classList.remove('hidden');
-            renderQuestion();
+        function selectRole(roleValue) {
+            document.querySelectorAll('.radio-card').forEach(card => card.classList.remove('selected'));
+            if(roleValue === 'business') {
+                document.getElementById('role-business').classList.add('selected');
+                document.getElementById('radio-bus').checked = true;
+            } else if(roleValue === 'individual') {
+                document.getElementById('role-individual').classList.add('selected');
+                document.getElementById('radio-ind').checked = true;
+            }
         }
 
-        function renderQuestion() {
-            const currentQuestion = questions[currentQuestionIndex];
-            document.getElementById('section-title').innerText = currentQuestion.section;
-            document.getElementById('question-counter').innerText = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
-            document.getElementById('question-text').innerText = currentQuestion.text;
+        function initiateAuditSequence() {
+            const nameField = document.getElementById('userName').value.trim();
+            const emailField = document.getElementById('userEmail').value.trim();
+            const selectedRadio = document.querySelector('input[name="userRole"]:checked');
+
+            if (!nameField || !emailField) {
+                alert("Please complete both Name and Email parameters to provision the secure audit tracking block.");
+                return;
+            }
+            if (!selectedRadio) {
+                alert("Please select your operational profile type to generate a specialized diagnostic routing checklist.");
+                return;
+            }
+
+            const betaBox = document.getElementById('betaConsent');
+            if (!betaBox.checked) {
+                const triggerPrompt = confirm("Would you like to register into the Envestorr SecureCheck Beta Program to receive advanced development previews, system updates, and cybersecurity newsletters?");
+                if (triggerPrompt) {
+                    betaBox.checked = true;
+                }
+            }
+
+            userDataProfile.name = nameField;
+            userDataProfile.email = emailField;
+            userDataProfile.role = selectedRadio.value;
+            userDataProfile.betaOptIn = betaBox.checked;
+
+            if (userDataProfile.role === 'individual') {
+                dynamicActiveQuestions = [...individualQuestions];
+            } else {
+                dynamicActiveQuestions = [...businessQuestions];
+            }
+
+            document.getElementById('step-profile').classList.remove('active');
+            document.getElementById('step-quiz').classList.add('active');
+            document.getElementById('headerSubtitle').innerText = `Target Audit Scope: ${userDataProfile.role === 'business' ? 'BUSINESS/FREELANCE' : 'PERSONAL'} PROFILE`;
             
-            // Calculate progress bar percentages
-            const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
-            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+            renderQuizCard();
         }
 
-        function handleAnswer(isSecure) {
-            if (isSecure) secureAnswersCount++;
-            
+        function renderQuizCard() {
+            const progressPercentage = (currentQuestionIndex / dynamicActiveQuestions.length) * 100;
+            document.getElementById('quizProgress').style.width = `${progressPercentage}%`;
+
+            const currentObj = dynamicActiveQuestions[currentQuestionIndex];
+            document.getElementById('quizSectionLabel').innerText = currentObj.section;
+            document.getElementById('quizQuestionText').innerText = `${currentQuestionIndex + 1}. ${currentObj.text}`;
+        }
+
+        function processQuestionAnswer(isSecureHabit) {
+            if (isSecureHabit) {
+                scoreCounter++;
+            } else {
+                flaggedVulnerabilities.push(dynamicActiveQuestions[currentQuestionIndex].id);
+            }
+
             currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                renderQuestion();
+            if (currentQuestionIndex < dynamicActiveQuestions.length) {
+                renderQuizCard();
             } else {
-                showResults();
+                document.getElementById('quizProgress').style.width = "100%";
+                evaluateScoringThresholdsAndPresentPaywall();
             }
         }
 
-        function showResults() {
-            document.getElementById('audit-screen').classList.add('hidden');
+        function evaluateScoringThresholdsAndPresentPaywall() {
+            document.getElementById('step-quiz').classList.remove('active');
             
-            const resultsScreen = document.getElementById('results-screen');
-            const headerCard = document.getElementById('risk-header-card');
-            const paywallSection = document.getElementById('paywall-section');
+            document.getElementById('summaryName').innerText = userDataProfile.name;
+            document.getElementById('summaryScope').innerText = userDataProfile.role === 'business' ? 'Business/Freelance Tier' : 'Personal Security Tier';
             
-            resultsScreen.classList.remove('hidden');
+            const badge = document.getElementById('modalBadge');
+            const title = document.getElementById('modalTitle');
+            const desc = document.getElementById('modalDescription');
+            const priceText = document.getElementById('summaryPrice');
+            const gatewayBtn = document.getElementById('gatewayTriggerBtn');
 
-            // Metric Logic Categorization
-            if (secureAnswersCount >= 10) {
-                // LOW RISK
-                headerCard.className = "rounded-2xl p-6 md:p-8 text-center border border-emerald-500 bg-emerald-500/10";
-                headerCard.innerHTML = `
-                    <div class="inline-block bg-emerald-500 text-slate-950 font-black px-3 py-1 rounded-full text-xs uppercase mb-3">Low Vulnerability</div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Excellent Defensive Score: ${secureAnswersCount}/${questions.length}</h2>
-                    <p class="text-sm text-slate-300 leading-relaxed">Your professional boundaries and digital channels show strong protection architecture. You are actively minimizing exposure to local attack vectors.</p>
-                `;
-                paywallSection.classList.add('hidden'); // No paywall needed, maybe show a newsletter form
-            } else if (secureAnswersCount >= 6) {
-                // MEDIUM RISK
-                headerCard.className = "rounded-2xl p-6 md:p-8 text-center border border-amber-500 bg-amber-500/10";
-                headerCard.innerHTML = `
-                    <div class="inline-block bg-amber-500 text-slate-950 font-black px-3 py-1 rounded-full text-xs uppercase mb-3">Moderate Vulnerability</div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Security Gaps Identified: ${secureAnswersCount}/${questions.length}</h2>
-                    <p class="text-sm text-slate-300 leading-relaxed">Your setup has active openings. A target vector against your core communication apps or client links could lock you out of your operations or endanger active invoices.</p>
-                `;
-                paywallSection.classList.remove('hidden');
+            badge.className = "badge";
+
+            if (scoreCounter >= 10) { 
+                assignedGhsFee = 0;
+                badge.classList.add("badge-low");
+                badge.innerText = "Low Risk";
+                title.innerText = "Excellent Security Hygiene!";
+                desc.innerText = "Your setups effectively neutralize typical baseline security issues. Keep ahead of evolving threat landscapes via our email news streams.";
+                priceText.innerText = "FREE ACCESS";
+                gatewayBtn.innerText = "Join Free Knowledge Stream";
+            } else if (scoreCounter >= 6) {
+                assignedGhsFee = 20;
+                badge.classList.add("badge-medium");
+                badge.innerText = "Moderate Risk";
+                title.innerText = "Active Vulnerabilities Found";
+                desc.innerText = "Some settings are exposed. A targeted phishing string or an account injection scheme could compromise your data or wallet balance.";
+                priceText.innerText = "GHS 20.00";
+                gatewayBtn.innerText = "Unlock Complete Action Report";
             } else {
-                // HIGH RISK
-                headerCard.className = "rounded-2xl p-6 md:p-8 text-center border border-rose-500 bg-rose-500/10";
-                headerCard.innerHTML = `
-                    <div class="inline-block bg-rose-500 text-slate-950 font-black px-3 py-1 rounded-full text-xs uppercase mb-3">Critical Vulnerability</div>
-                    <h2 class="text-2xl font-bold text-white mb-2">High Operational Exposure: ${secureAnswersCount}/${questions.length}</h2>
-                    <p class="text-sm text-slate-300 leading-relaxed">Critical structural flaws discovered. Your workflow access logs, incoming client assets, and payment streams are highly susceptible to loss or third-party interference.</p>
-                `;
-                paywallSection.classList.remove('hidden');
+                assignedGhsFee = 50;
+                badge.classList.add("badge-high");
+                badge.innerText = "Critical Risk";
+                title.innerText = "Severe Security Exposure";
+                desc.innerText = "Critical security gaps found. Your active communication lines, financial accounts, and passwords require immediate intervention.";
+                priceText.innerText = "GHS 50.00";
+                gatewayBtn.innerText = "Unlock Complete Action Report";
             }
+
+            document.getElementById('paymentModalOverlay').classList.add('active');
+            transmitMetricsToGoogleSheetsCloud();
         }
 
-        function resetAudit() {
+        function transmitMetricsToGoogleSheetsCloud() {
+            const dataPayload = {
+                name: userDataProfile.name,
+                email: userDataProfile.email,
+                role: userDataProfile.role === 'business' ? "Business/Freelancer" : "Individual Consumer",
+                betaOptIn: userDataProfile.betaOptIn ? "Yes" : "No",
+                score: `${scoreCounter}/12`,
+                riskLevel: document.getElementById('modalBadge').innerText,
+                vulnerabilities: flaggedVulnerabilities.join(', ') || "None"
+            };
+
+            document.getElementById('cloudSyncIndicator').innerText = "Syncing profile matrix to secure cloud sheet...";
+
+            fetch(APPS_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(dataPayload)
+            })
+            .then(() => {
+                document.getElementById('cloudSyncIndicator').innerText = "✓ System logs securely synchronized.";
+                document.getElementById('cloudSyncIndicator').style.color = "var(--success-color)";
+            })
+            .catch(err => {
+                document.getElementById('cloudSyncIndicator').innerText = "Offline log holding active. Sync paused.";
+                console.error("Cloud tracking integration failure: ", err);
+            });
+        }
+
+        function invokePaystackInlineEngine() {
+            if (assignedGhsFee === 0) {
+                alert("Subscription activated! Check your inbox for security updates from Envestorr.");
+                closePaymentModal();
+                resetFormStateEngine();
+                return;
+            }
+
+            const absolutePesewasAmount = assignedGhsFee * 100;
+
+            let paystackHandler = PaystackPop.setup({
+                key: 'pk_live_your_actual_public_live_key_string_goes_here', 
+                email: userDataProfile.email,
+                amount: absolutePesewasAmount,
+                currency: 'GHS',
+                metadata: {
+                    custom_fields: [
+                        { display_name: "Auditor Name", variable_name: "auditor_name", value: userDataProfile.name },
+                        { display_name: "Audit Risk Tier", variable_name: "audit_risk_tier", value: document.getElementById('modalBadge').innerText }
+                    ]
+                },
+                callback: function(paymentResponse) {
+                    document.getElementById('checkoutFormStage').style.display = 'none';
+
+                    if (assignedGhsFee === 50) {
+                        document.getElementById('calendarBookingStage').style.display = 'block';
+                    } else if (assignedGhsFee === 20) {
+                        document.getElementById('successHeading').innerText = 'Premium Audit Unlocked';
+                        document.getElementById('successMessage').innerText = 'Thank you for your payment. Your comprehensive vulnerability configuration analysis is processing. The document containing your complete structural remediation action checklist will be sent to your email address shortly.';
+                        document.getElementById('checkoutSuccessStage').style.display = 'block';
+                    }
+                },
+                onClose: function() {
+                    alert("Verification check aborted. Clear payment parameters to unlock configuration blueprints.");
+                }
+            });
+
+            paystackHandler.openIframe();
+        }
+
+        function commitCalendarAppointment() {
+            const dateVal = document.getElementById('bookingDate').value;
+            const timeVal = document.getElementById('bookingTime').value;
+
+            if (!dateVal || !timeVal) {
+                alert('Please select both a confirmation date and an available 30-minute briefing window.');
+                return;
+            }
+
+            document.getElementById('calendarBookingStage').style.display = 'none';
+            document.getElementById('successHeading').innerText = 'Briefing Session Confirmed';
+            document.getElementById('successMessage').innerText = 'Your critical security exposure consultation session has been logged. Review booking distribution maps below:';
+            
+            const logsBox = document.getElementById('dispatchLogs');
+            logsBox.innerHTML = `
+                <strong>[Automation Dispatch Report Elements]:</strong><br>
+                • Booking parameters alert dispatched to Architect: <em>quayarteydave@mail.com</em><br>
+                • Receipt confirmation voucher transmitted to Booker: <em>${userDataProfile.email}</em><br>
+                • <strong>Locked System Window Slot:</strong> ${dateVal} from ${timeVal} (30 mins duration)
+            `;
+            logsBox.style.display = 'block';
+            document.getElementById('checkoutSuccessStage').style.display = 'block';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModalOverlay').classList.remove('active');
+            resetFormStateEngine();
+        }
+
+        function resetFormStateEngine() {
             currentQuestionIndex = 0;
-            secureAnswersCount = 0;
-            document.getElementById('results-screen').classList.add('hidden');
-            document.getElementById('welcome-screen').classList.remove('hidden');
+            scoreCounter = 0;
+            flaggedVulnerabilities = [];
+            document.getElementById('userName').value = "";
+            document.getElementById('userEmail').value = "";
+            document.getElementById('bookingDate').value = "";
+            document.getElementById('bookingTime').selectedIndex = 0;
+            document.querySelectorAll('.radio-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById('headerSubtitle').innerText = "On-Demand Security & Infrastructure Audit";
+            document.getElementById('cloudSyncIndicator').innerText = "Cloud Sync Engine Initialized...";
+            document.getElementById('cloudSyncIndicator').style.color = "var(--text-muted)";
+            
+            document.getElementById('checkoutFormStage').style.display = 'block';
+            document.getElementById('calendarBookingStage').style.display = 'none';
+            document.getElementById('checkoutSuccessStage').style.display = 'none';
+            document.getElementById('dispatchLogs').style.display = 'none';
+            
+            document.querySelectorAll('.step-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById('step-profile').classList.add('active');
         }
     </script>
 </body>
-  </html>
-
+</html>
