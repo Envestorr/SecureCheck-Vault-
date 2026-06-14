@@ -86,6 +86,7 @@
         input[type="text"],
         input[type="email"],
         input[type="date"],
+        textarea,
         select {
             width: 100%;
             padding: 12px 16px;
@@ -97,7 +98,13 @@
             transition: border-color 0.2s;
         }
 
-        input:focus, select:focus {
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--accent-color);
         }
@@ -272,7 +279,7 @@
             border: 1px solid var(--border-color);
             border-radius: 16px;
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             padding: 32px;
             position: relative;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
@@ -315,18 +322,40 @@
 
         .summary-row {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 4px;
             font-size: 14px;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
+        }
+        
+        .summary-row span:first-child {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
-        .summary-row.total {
-            border-top: 1px solid var(--border-color);
-            padding-top: 10px;
-            margin-bottom: 0;
-            font-weight: 700;
-            font-size: 16px;
+        .summary-row span:last-child {
             color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .summary-row.recommendation-block {
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-bottom: 0;
+        }
+
+        .summary-row.recommendation-block p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        .feedback-portal-section {
+            margin-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 16px;
         }
 
         .calendar-container {
@@ -358,6 +387,13 @@
             margin-top: 15px;
             text-align: left;
             word-break: break-all;
+        }
+        
+        .sync-loader {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 16px;
         }
     </style>
 </head>
@@ -432,19 +468,32 @@
                 <div class="payment-summary">
                     <div class="summary-row">
                         <span>Target Audit Identity</span>
-                        <span id="summaryName" style="color: var(--text-main); font-weight: 500;">-</span>
+                        <span id="summaryName">-</span>
                     </div>
                     <div class="summary-row">
                         <span>Auditing Scope Matrix</span>
-                        <span id="summaryScope" style="color: var(--text-main); font-weight: 500;">-</span>
+                        <span id="summaryScope">-</span>
                     </div>
-                    <div class="summary-row total">
-                        <span>Total Verification Cost</span>
-                        <span id="summaryPrice">GHS 0.00</span>
+                    <div class="summary-row">
+                        <span>Risk Profile</span>
+                        <span id="summaryRiskProfile" style="font-weight: 600;">-</span>
+                    </div>
+                    <div class="summary-row recommendation-block">
+                        <span>Recommended Action</span>
+                        <p id="summaryRecommendation">-</p>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" id="gatewayTriggerBtn" style="padding: 16px; font-size: 16px;" onclick="invokePaystackInlineEngine()">Unlock Complete Action Report</button>
+                <button class="btn btn-primary" id="gatewayTriggerBtn" style="padding: 16px; font-size: 16px;" onclick="invokePaystackInlineEngine()">Unlock Action Report</button>
+                
+                <div class="feedback-portal-section" id="feedbackPortalBlock">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="userFeedbackInput" style="font-size: 13px; color: var(--text-muted);">Quick Question: How can we make this audit tool more valuable for you?</label>
+                        <textarea id="userFeedbackInput" placeholder="Share your feedback, ideas, or thoughts here..."></textarea>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="submitFeedbackBtn" style="padding: 10px; font-size: 13px;" onclick="forwardUserFeedbackToCloud()">Submit Feedback Only</button>
+                </div>
+
                 <div class="sync-loader" id="cloudSyncIndicator">Cloud Sync Engine Initialized...</div>
             </div>
 
@@ -484,9 +533,8 @@
             </div>
 
         </div>
-      </div>
-
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    </div>
+        <script src="https://js.paystack.co/v1/inline.js"></script>
     <script>
         // BACKEND SCRIPT CONFIGURATION CODES
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxu3_Hp0-yneExypvLjgFwDu6SealSfgXInB0ZlX5gVqTDfmj084-IvvG9pnLQvQ6aQ/exec";
@@ -611,47 +659,62 @@
             document.getElementById('step-quiz').classList.remove('active');
             
             document.getElementById('summaryName').innerText = userDataProfile.name;
-            document.getElementById('summaryScope').innerText = userDataProfile.role === 'business' ? 'Business/Freelance Tier' : 'Personal Security Tier';
+            document.getElementById('summaryScope').innerText = userDataProfile.role === 'business' ? 'Business / Freelancer Security Matrix' : 'Personal Digital Security Tier';
             
             const badge = document.getElementById('modalBadge');
             const title = document.getElementById('modalTitle');
             const desc = document.getElementById('modalDescription');
-            const priceText = document.getElementById('summaryPrice');
+            const riskProfileText = document.getElementById('summaryRiskProfile');
+            const recommendationText = document.getElementById('summaryRecommendation');
             const gatewayBtn = document.getElementById('gatewayTriggerBtn');
 
             badge.className = "badge";
+            document.getElementById('userFeedbackInput').value = ""; 
 
             if (scoreCounter >= 10) { 
                 assignedGhsFee = 0;
                 badge.classList.add("badge-low");
                 badge.innerText = "Low Risk";
                 title.innerText = "Excellent Security Hygiene!";
-                desc.innerText = "Your setups effectively neutralize typical baseline security issues. Keep ahead of evolving threat landscapes via our email news streams.";
-                priceText.innerText = "FREE ACCESS";
-                gatewayBtn.innerText = "Join Free Knowledge Stream";
+                desc.innerText = "Your configurations effectively neutralize typical baseline security issues.";
+                
+                riskProfileText.innerText = "Low Risk";
+                riskProfileText.style.color = "var(--success-color)";
+                recommendationText.innerText = "Continue maintaining your strong security hygiene. Your profile is automatically white-listed for our standard development updates and security newsletters completely free.";
+                gatewayBtn.innerText = "Access Free Dashboard Updates";
+                
             } else if (scoreCounter >= 6) {
                 assignedGhsFee = 20;
                 badge.classList.add("badge-medium");
                 badge.innerText = "Moderate Risk";
                 title.innerText = "Active Vulnerabilities Found";
                 desc.innerText = "Some settings are exposed. A targeted phishing string or an account injection scheme could compromise your data or wallet balance.";
-                priceText.innerText = "GHS 20.00";
-                gatewayBtn.innerText = "Unlock Complete Action Report";
+                
+                riskProfileText.innerText = "Moderate Risk";
+                riskProfileText.style.color = "var(--warning-color)";
+                recommendationText.innerText = "Purchase our highly customized security guide which contains your full security report and recommended step-by-step actions to help you secure your structural infrastructure endpoints permanently.";
+                gatewayBtn.innerText = "Purchase Security Guide - GHS 20";
+                
             } else {
                 assignedGhsFee = 50;
                 badge.classList.add("badge-high");
                 badge.innerText = "Critical Risk";
                 title.innerText = "Severe Security Exposure";
-                desc.innerText = "Critical security gaps found. Your active communication lines, financial accounts, and passwords require immediate intervention.";
-                priceText.innerText = "GHS 50.00";
-                gatewayBtn.innerText = "Unlock Complete Action Report";
+                desc.innerText = "Critical security gaps found. Your active communication lines, financial accounts, and passwords require immediate professional intervention.";
+                
+                riskProfileText.innerText = "Critical Risk";
+                riskProfileText.style.color = "var(--danger-color)";
+                recommendationText.innerText = "Book an appointment with an expert immediately who will physically isolate your vulnerabilities, establish secure access perimeters, and prevent imminent unauthorized breaches.";
+                gatewayBtn.innerText = "Consult an Expert - GHS 50";
             }
 
             document.getElementById('paymentModalOverlay').classList.add('active');
-            transmitMetricsToGoogleSheetsCloud();
+            transmitMetricsToGoogleSheetsCloud(false); 
         }
 
-        function transmitMetricsToGoogleSheetsCloud() {
+        function transmitMetricsToGoogleSheetsCloud(includeFeedback = false) {
+            const feedbackText = document.getElementById('userFeedbackInput').value.trim();
+            
             const dataPayload = {
                 name: userDataProfile.name,
                 email: userDataProfile.email,
@@ -659,7 +722,8 @@
                 betaOptIn: userDataProfile.betaOptIn ? "Yes" : "No",
                 score: `${scoreCounter}/12`,
                 riskLevel: document.getElementById('modalBadge').innerText,
-                vulnerabilities: flaggedVulnerabilities.join(', ') || "None"
+                vulnerabilities: flaggedVulnerabilities.join(', ') || "None",
+                feedback: includeFeedback ? feedbackText : ""
             };
 
             document.getElementById('cloudSyncIndicator').innerText = "Syncing profile matrix to secure cloud sheet...";
@@ -678,6 +742,20 @@
                 document.getElementById('cloudSyncIndicator').innerText = "Offline log holding active. Sync paused.";
                 console.error("Cloud tracking integration failure: ", err);
             });
+        }
+
+        function forwardUserFeedbackToCloud() {
+            const feedbackText = document.getElementById('userFeedbackInput').value.trim();
+            if (!feedbackText) {
+                alert("Please write something in the feedback field before submitting.");
+                return;
+            }
+            
+            transmitMetricsToGoogleSheetsCloud(true);
+            alert("Thank you! Your feedback has been recorded and safely synced.");
+            document.getElementById('feedbackPortalBlock').style.opacity = "0.5";
+            document.getElementById('submitFeedbackBtn').disabled = true;
+            document.getElementById('submitFeedbackBtn').innerText = "Feedback Submitted ✓";
         }
 
         function invokePaystackInlineEngine() {
@@ -757,6 +835,11 @@
             document.getElementById('userEmail').value = "";
             document.getElementById('bookingDate').value = "";
             document.getElementById('bookingTime').selectedIndex = 0;
+            document.getElementById('userFeedbackInput').value = "";
+            document.getElementById('feedbackPortalBlock').style.opacity = "1";
+            document.getElementById('submitFeedbackBtn').disabled = false;
+            document.getElementById('submitFeedbackBtn').innerText = "Submit Feedback Only";
+            
             document.querySelectorAll('.radio-card').forEach(card => card.classList.remove('selected'));
             document.getElementById('headerSubtitle').innerText = "On-Demand Security & Infrastructure Audit";
             document.getElementById('cloudSyncIndicator').innerText = "Cloud Sync Engine Initialized...";
@@ -773,3 +856,4 @@
     </script>
 </body>
 </html>
+                
