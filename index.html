@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Envestorr SecureCheck - Audit Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Calendly Popup Widget Assets -->
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
     <style>
         :root {
             --bg-primary: #0a0f1d;
@@ -85,7 +88,6 @@
 
         input[type="text"],
         input[type="email"],
-        input[type="date"],
         textarea,
         select {
             width: 100%;
@@ -138,8 +140,7 @@
             border-color: var(--accent-color);
             background: rgba(59, 130, 246, 0.05);
         }
-
-        .checkbox-group {
+                .checkbox-group {
             display: flex;
             align-items: flex-start;
             gap: 12px;
@@ -327,7 +328,8 @@
             font-size: 14px;
             margin-bottom: 14px;
         }
-                .summary-row span:first-child {
+
+        .summary-row span:first-child {
             color: var(--text-muted);
             font-size: 12px;
             text-transform: uppercase;
@@ -355,14 +357,6 @@
             margin-top: 20px;
             border-top: 1px dashed var(--border-color);
             padding-top: 16px;
-        }
-
-        .calendar-container {
-            margin-top: 15px;
-            background: var(--bg-primary);
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
         }
 
         .success-state {
@@ -499,28 +493,12 @@
             <div id="calendarBookingStage" style="display: none;">
                 <div class="badge badge-high">Action Required</div>
                 <h2 style="font-size: 20px; margin-bottom: 8px;">Schedule Security Briefing</h2>
-                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Critical risk variables found. Your profile requires a manual 30-minute security consultation validation check. Lock in your session slot below:</p>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Critical risk variables found. Your profile requires a manual 30-minute security consultation validation check. Click below to pick your preferred date and time:</p>
                 
-                <div class="calendar-container">
-                    <div class="form-group" style="margin-bottom: 16px;">
-                        <label for="bookingDate">Select Consultation Date</label>
-                        <input type="date" id="bookingDate">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="bookingTime">Select 30-Minute Available Time Slot</label>
-                        <select id="bookingTime">
-                            <option value="">-- Choose a window --</option>
-                            <option value="09:00 AM - 09:30 AM">09:00 AM - 09:30 AM</option>
-                            <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
-                            <option value="01:00 PM - 01:30 PM">01:00 PM - 01:30 PM</option>
-                            <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="commitCalendarAppointment()">Confirm & Schedule Consultation</button>
+                <button type="button" class="btn btn-primary" style="margin-top: 10px; padding: 16px;" onclick="openCalendlyPopupPortal()">Open Booking Calendar 📅</button>
             </div>
-    <div id="checkoutSuccessStage" style="display: none;">
+
+            <div id="checkoutSuccessStage" style="display: none;">
                 <div class="success-state">
                     <div class="success-icon">✓</div>
                     <h2 id="successHeading" style="font-size: 22px; margin-bottom: 12px;">Transaction Confirmed</h2>
@@ -532,8 +510,9 @@
 
         </div>
     </div>
-<script src="https://js.paystack.co/v1/inline.js"></script>
-    <script>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+        <script>
         // BACKEND SCRIPT CONFIGURATION CODES
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxu3_Hp0-yneExypvLjgFwDu6SealSfgXInB0ZlX5gVqTDfmj084-IvvG9pnLQvQ6aQ/exec";
 
@@ -626,9 +605,8 @@
             document.getElementById('headerSubtitle').innerText = `Target Audit Scope: ${userDataProfile.role === 'business' ? 'BUSINESS/FREELANCE' : 'PERSONAL'} PROFILE`;
             
             renderQuizCard();
-        }
-
-        function renderQuizCard() {
+        } 
+                function renderQuizCard() {
             const progressPercentage = (currentQuestionIndex / dynamicActiveQuestions.length) * 100;
             document.getElementById('quizProgress').style.width = `${progressPercentage}%`;
 
@@ -695,7 +673,7 @@
                 
             } else {
                 assignedGhsFee = 50;
-                badge.classList.add("badge-high");
+                badge.className = "badge badge-high";
                 badge.innerText = "Critical Risk";
                 title.innerText = "Severe Security Exposure";
                 desc.innerText = "Critical security gaps found. Your active communication lines, financial accounts, and passwords require immediate professional intervention.";
@@ -709,6 +687,7 @@
             document.getElementById('paymentModalOverlay').classList.add('active');
             transmitMetricsToGoogleSheetsCloud(false); 
         }
+
         function transmitMetricsToGoogleSheetsCloud(includeFeedback = false) {
             const feedbackText = document.getElementById('userFeedbackInput').value.trim();
             
@@ -752,7 +731,6 @@
             alert("Thank you! Your feedback has been recorded and safely synced.");
             document.getElementById('feedbackPortalBlock').style.opacity = "0.5";
             document.getElementById('submitFeedbackBtn').disabled = true;
-            document.getElementById('submitFeedbackBtn').disabled = true;
             document.getElementById('submitFeedbackBtn').innerText = "Feedback Submitted ✓";
         }
 
@@ -778,9 +756,6 @@
                     ]
                 },
                 callback: function(paymentResponse) {
-                    // ====================================================
-                    // 🚀 BACKEND AUTOMATED UPDATE HOOK DETACHMENT
-                    // ====================================================
                     fetch(APPS_SCRIPT_URL, {
                         method: "POST",
                         mode: "no-cors",
@@ -809,28 +784,50 @@
             paystackHandler.openIframe();
         }
 
-        function commitCalendarAppointment() {
-            const dateVal = document.getElementById('bookingDate').value;
-            const timeVal = document.getElementById('bookingTime').value;
+        function openCalendlyPopupPortal() {
+            // 1. Fire up the native Calendly popup engine overlay
+            Calendly.initPopupWidget({
+                url: 'https://calendly.com/quayarteydave/30min',
+                prefill: {
+                    email: userDataProfile.email,
+                    name: userDataProfile.name
+                },
+                utm: {}
+            });
 
-            if (!dateVal || !timeVal) {
-                alert('Please select both a confirmation date and an available 30-minute briefing window.');
-                return;
-            }
-
-            document.getElementById('calendarBookingStage').style.display = 'none';
-            document.getElementById('successHeading').innerText = 'Briefing Session Confirmed';
-            document.getElementById('successMessage').innerText = 'Your critical security exposure consultation session has been logged. Review booking distribution maps below:';
-            
-            const logsBox = document.getElementById('dispatchLogs');
-            logsBox.innerHTML = `
-                <strong>[Automation Dispatch Report Elements]:</strong><br>
-                • Booking parameters alert dispatched to Architect: <em>quayarteydave@mail.com</em><br>
-                • Receipt confirmation voucher transmitted to Booker: <em>${userDataProfile.email}</em><br>
-                • <strong>Locked System Window Slot:</strong> ${dateVal} from ${timeVal} (30 mins duration)
-            `;
-            logsBox.style.display = 'block';
-            document.getElementById('checkoutSuccessStage').style.display = 'block';
+            // 2. Set up event listener to capture scheduling completion
+            window.addEventListener('message', function(e) {
+                if (e.data.event && e.data.event === "calendly.event_scheduled") {
+                    
+                    // Transmit status hook back to your Google Apps Script backend
+                    fetch(APPS_SCRIPT_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "text/plain" },
+                        body: JSON.stringify({
+                            action: "booking_complete",
+                            email: userDataProfile.email,
+                            appointmentDetails: "Scheduled via Popup Widget (Review Calendly Dashboard for Timings)"
+                        })
+                    })
+                    .then(() => {
+                        document.getElementById('calendarBookingStage').style.display = 'none';
+                        document.getElementById('successHeading').innerText = 'Briefing Session Confirmed';
+                        document.getElementById('successMessage').innerText = 'Your critical security exposure consultation session has been logged on our network tracking matrix. Check your mailbox for follow-up notifications.';
+                        
+                        const logsBox = document.getElementById('dispatchLogs');
+                        logsBox.innerHTML = `
+                            <strong>[Automation Dispatch Report Elements]:</strong><br>
+                            • Structural parameter notification pushed to Architect balance.<br>
+                            • Status mapped securely to User Session: <em>${userDataProfile.email}</em><br>
+                            • <strong>Next Action Step:</strong> Review your Calendly portal/email dashboard to confirm the exact chosen window and manually forward meeting invites.
+                        `;
+                        logsBox.style.display = 'block';
+                        document.getElementById('checkoutSuccessStage').style.display = 'block';
+                    })
+                    .catch(err => console.error("Calendar sheet update communication breakdown: ", err));
+                }
+            });
         }
 
         function closePaymentModal() {
@@ -844,8 +841,6 @@
             flaggedVulnerabilities = [];
             document.getElementById('userName').value = "";
             document.getElementById('userEmail').value = "";
-            document.getElementById('bookingDate').value = "";
-            document.getElementById('bookingTime').selectedIndex = 0;
             document.getElementById('userFeedbackInput').value = "";
             document.getElementById('feedbackPortalBlock').style.opacity = "1";
             document.getElementById('submitFeedbackBtn').disabled = false;
@@ -867,4 +862,7 @@
     </script>
 </body>
 </html>
-        
+
+
+
+            
